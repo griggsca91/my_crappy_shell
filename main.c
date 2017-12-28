@@ -16,14 +16,12 @@ int lsh_exit(char **args);
 
 char *builtin_str[] = {
 	"cd",
-	"pwd", 
 	"help",
 	"exit"
 };
 
 int (*builtin_func[]) (char **) = {
 	&lsh_cd,
-	&lsh_pwd,
 	&lsh_help,
 	&lsh_exit
 };
@@ -52,35 +50,6 @@ int lsh_cd(char **args)
 	return 1;
 }
 
-int lsh_pwd(char **args)
-{
-	long path_max;
-	size_t size;
-	char *buf = NULL;
-	char *ptr = NULL;
-
-	path_max = pathconf(".", _PC_PATH_MAX);
-	if (path_max == -1) {
-		size = 1024;
-	} else if (path_max > 10240) {
-		size = 10240;
-	} else {
-		size = path_max;
-	}
-	if ((buf = realloc(buf, size)) == NULL) {
-		perror("lsh");
-	}
-
-	ptr = getcwd(buf, size);
-	if (ptr == NULL) {
-		perror("lsh");
-	}
-
-	printf("%s\n", buf);
-
-	return 1;
-}
-
 int lsh_help(char **args)
 {
 
@@ -90,6 +59,7 @@ int lsh_help(char **args)
 int lsh_exit(char **args)
 {
 
+	exit(0);
 	return 1;
 }
 
@@ -100,7 +70,7 @@ void lsh_loop(void)
 	int status;
 
 	do {
-		printf(">");
+		printf("> ");
 		line = lsh_read_line();
 		args = lsh_split_line(line);
 		status = lsh_execute(args);
